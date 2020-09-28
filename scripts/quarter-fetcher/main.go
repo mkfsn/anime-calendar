@@ -6,8 +6,10 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/otiai10/opengraph"
 )
 
 type Program struct {
@@ -25,9 +27,19 @@ type Song struct {
 	Details map[string]string
 }
 
+type OpenGraphImage struct {
+	URL string
+}
+
+type OpenGraph struct {
+	Images []*OpenGraphImage
+	Description string
+}
+
 type Anime struct {
 	Title string
 	Website string
+	OpenGraph *OpenGraph
 	Staff map[string]string
 	Opening *Song
 	Ending *Song
@@ -49,6 +61,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	var wg sync.WaitGroup
 	animes := make([]*Anime, 0)
 
 	doc.Find("ul.titlesDetail > a").Each(func(i int, selection *goquery.Selection) {
@@ -125,14 +138,41 @@ func main() {
 			})
 		}
 
-		// TODO: fetch opengraph
+		wg.Add(1)
+		go fetchOpenGraph(&wg, &anime)
 
 		animes = append(animes, &anime)
 	})
+	wg.Wait()
 
 	b, err := json.MarshalIndent(animes, "", "\t")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	fmt.Printf("%s\n", b)
+}
+
+func fetchOpenGraph(wg *sync.WaitGroup, anime *Anime) {
+	defer wg.Done()
+	if anime.Website == "" {
+		return
+	}
+	og, err := opengraph.Fetch(anime.Website)
+	if err != nil {
+		log.Printf("error: failed to get og of %s: %s\n", anime.Title, err)
+		return
+	}
+
+	anime.OpenGraph = &OpenGraph {
+		Description: og.Description,
+	}
+
+	if og.Image != nil && len(og.Image) != 0 {
+		anime.OpenGraph.Images = make([]*OpenGraphImage, 0)
+		for _, image := range og.Image {
+			anime.OpenGraph.Images = append(anime.OpenGraph.Images, &OpenGraphImage{
+				URL: image.URL,
+			})
+		}
+	}
 }
