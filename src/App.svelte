@@ -1,48 +1,47 @@
 <script>
-  import { onMount } from "svelte";
-  export let date;
-
-  onMount(async () => {
-    const res = await fetch("/api/date");
-    const newDate = await res.text();
-    date = newDate;
-  });
+  import Anime from "./components/Anime.svelte";
+  async function fetchAnime() {
+      const response = await fetch(`/data/anime.json`);
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error("failed to fetch anime");
+  }
+  let promise = fetchAnime();
 </script>
 
+<style>
+  .scrollable {
+    width: 100%;
+    overflow-x: scroll;
+    background-color: #e2e2e2;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+  .container {
+    display: flex;
+    flex-direction: row;
+    float: left;
+  }
+</style>
+
+<svelte:head>
+  <title>Anime Calendar</title>
+</svelte:head>
+
 <main>
-  <h1>Svelte + Node.js API</h1>
-  <h2>
-    Deployed with
-    <a href="https://vercel.com/docs" target="_blank" rel="noreferrer noopener">
-      Vercel
-    </a>
-    !
-  </h2>
-  <p>
-    <a
-      href="https://github.com/vercel/vercel/tree/master/examples/svelte"
-      target="_blank"
-      rel="noreferrer noopener">
-      This project
-    </a>
-    is a
-    <a href="https://svelte.dev/">Svelte</a>
-    app with three directories,
-    <code>/public</code>
-    for static assets,
-    <code>/src</code>
-    for components and content, and
-    <code>/api</code>
-    which contains a serverless
-    <a href="https://nodejs.org/en/">Node.js</a>
-    function. See
-    <a href="/api/date">
-      <code>api/date</code>
-      for the Date API with Node.js
-    </a>
-    .
-  </p>
-  <br />
-  <h2>The date according to Node.js is:</h2>
-  <p>{date ? date : 'Loading date...'}</p>
+  <h1>Anime</h1>
+  {#await promise}
+    <p>Loading ...</p>
+  {:then animes}
+    <div class="scrollable">
+      <div class="container">
+        {#each animes as anime, i}
+          <Anime {anime} />
+        {/each}
+      </div>
+    </div>
+  {:catch error}
+    <p style="color: red">{error.message}</p>
+  {/await}
 </main>
