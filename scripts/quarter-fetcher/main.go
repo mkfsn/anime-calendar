@@ -3,10 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/otiai10/opengraph"
@@ -19,11 +22,11 @@ type Program struct {
 
 type Link struct {
 	Title string
-	URL string
+	URL   string
 }
 
 type Song struct {
-	Title string
+	Title   string
 	Details map[string]string
 }
 
@@ -32,20 +35,32 @@ type OpenGraphImage struct {
 }
 
 type OpenGraph struct {
-	Images []*OpenGraphImage
+	Images      []*OpenGraphImage
 	Description string
 }
 
+type Episode struct {
+	Channel  string
+	StartAt  time.Time
+	Duration time.Duration
+	Number   int
+	Subtitle string
+}
+
+type Timetable []Episode
+
 type Anime struct {
-	Title string
-	Website string
-	OpenGraph *OpenGraph
-	Staff map[string]string
-	Opening *Song
-	Ending *Song
-	Cast map[string]string
-	Programs []*Program
-	Links []*Link
+	Id         string
+	Title      string
+	Website    string
+	OpenGraph  *OpenGraph
+	Staff      map[string]string
+	Opening    *Song
+	Ending     *Song
+	Cast       map[string]string
+	Programs   []*Program
+	Links      []*Link
+	Timetables map[string]Timetable
 }
 
 func main() {
@@ -65,10 +80,12 @@ func main() {
 	animes := make([]*Anime, 0)
 
 	doc.Find("ul.titlesDetail > a").Each(func(i int, selection *goquery.Selection) {
-		name := selection.AttrOr("name", "")
-		selector := fmt.Sprintf("li#TID%s > table tr > td", name)
-		link := doc.Find(selector).Eq(0).Find("a").AttrOr("href", "")
 		var anime Anime
+
+		anime.Id = selection.AttrOr("name", "")
+		selector := fmt.Sprintf("li#TID%s > table tr > td", anime.Id)
+		link := doc.Find(selector).Eq(0).Find("a").AttrOr("href", "")
+
 		if strings.HasPrefix(link, "http") {
 			anime.Website = link
 		}
@@ -133,13 +150,14 @@ func main() {
 			a.Each(func(i int, selection *goquery.Selection) {
 				anime.Links = append(anime.Links, &Link{
 					Title: selection.Text(),
-					URL: selection.AttrOr("href", ""),
+					URL:   selection.AttrOr("href", ""),
 				})
 			})
 		}
 
-		wg.Add(1)
+		wg.Add(2)
 		go fetchOpenGraph(&wg, &anime)
+		go fetchTimetable(&wg, &anime)
 
 		animes = append(animes, &anime)
 	})
@@ -149,7 +167,76 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Printf("%s\n", b)
+	if err := ioutil.WriteFile("../../public/data/anime.json", b, 0644); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func fetchTimetable(wg *sync.WaitGroup, anime *Anime) {
+	defer wg.Done()
+
+	url := fmt.Sprintf("http://cal.syoboi.jp/tid/%s/time", anime.Id)
+	res, err := http.Get(url)
+	if err != nil {
+		log.Printf("failed to send request: %s\n", err)
+		return
+	}
+	defer res.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		log.Printf("failed to parse response: %s\n", err)
+		return
+	}
+
+	table := doc.Find("table#ProgList")
+	anime.Timetables = make(map[string]Timetable)
+	table.Find("tbody tr").Each(func(i int, tr *goquery.Selection) {
+		if i == 0 {
+			return
+		}
+		channel := tr.Find("td.ch").Text()
+		timetables := anime.Timetables[channel]
+
+		var episode Episode
+		episode.Channel = channel
+
+		tr.Find("td.subtitle").Contents().EachWithBreak(func(i int, s *goquery.Selection) bool {
+			if goquery.NodeName(s) == "#text" {
+				episode.Subtitle = s.Text()
+				return false
+			}
+			return true
+		})
+
+		var year, mon, day, hh, mm, ss, carry int
+		var weekDay rune
+		fmt.Sscanf(tr.Find("td.start").Text(), "%d-%d-%d(%c) %d:%d:%d ", &year, &mon, &day, &weekDay, &hh, &mm, &ss)
+		if hh >= 24 {
+			hh = hh - 24
+			carry = 1
+		}
+		parsedTimeString := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d+00:00", year, mon, day, hh, mm, ss)
+		if startTime, err := time.Parse(time.RFC3339, parsedTimeString); err == nil {
+			episode.StartAt = startTime.Add(time.Duration(carry) * time.Hour * 24)
+		}
+
+		if min, err := strconv.Atoi(tr.Find("td.min").Text()); err == nil {
+			episode.Duration = time.Duration(min) * time.Minute
+		}
+
+		if v, err := strconv.Atoi(tr.Find("td.count").Text()); err == nil {
+			episode.Number = v
+		}
+
+		timetables = append(timetables, episode)
+		anime.Timetables[channel] = timetables
+	})
+
+	channels := make([]string, 0)
+	for channel := range anime.Timetables {
+		channels = append(channels, channel)
+	}
 }
 
 func fetchOpenGraph(wg *sync.WaitGroup, anime *Anime) {
@@ -163,7 +250,7 @@ func fetchOpenGraph(wg *sync.WaitGroup, anime *Anime) {
 		return
 	}
 
-	anime.OpenGraph = &OpenGraph {
+	anime.OpenGraph = &OpenGraph{
 		Description: og.Description,
 	}
 
