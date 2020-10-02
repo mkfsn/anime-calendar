@@ -1,5 +1,4 @@
 <script>
-    import AnimeActions from "./AnimeActions.svelte";
     import AnimeSummary from "./AnimeSummary.svelte";
     import AnimeCover from "./AnimeCover.svelte";
 
@@ -24,5 +23,4 @@
 <div class="anime">
     <AnimeCover {anime} />
     <AnimeSummary {anime} />
-    <AnimeActions {anime} />
 </div>

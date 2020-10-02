@@ -12,7 +12,6 @@
     box-sizing: border-box;
     font-family: 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
     hyphens: auto;
-    line-height: 1.65;
     margin: 0 auto;
     text-align: center;
   }
