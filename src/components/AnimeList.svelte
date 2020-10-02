@@ -1,5 +1,6 @@
 <script>
-    import Anime from "./Anime.svelte";
+    import Anime from "./Anime/Anime.svelte";
+    export let show = true;
     async function fetchAnime() {
         const response = await fetch(`/data/anime.json`);
         if (response.ok) {
@@ -23,16 +24,18 @@
     }
 </style>
 
-{#await promise}
-    <p>Loading ...</p>
-{:then animes}
-    <div class="scrollable">
-        <div class="container">
-            {#each animes as anime, i}
-                <Anime {anime} />
-            {/each}
+{#if show}
+    {#await promise}
+        <p>Loading ...</p>
+    {:then animes}
+        <div class="scrollable">
+            <div class="container">
+                {#each animes as anime, i}
+                    <Anime {anime} />
+                {/each}
+            </div>
         </div>
-    </div>
-{:catch error}
-    <p style="color: red">{error.message}</p>
-{/await}
+    {:catch error}
+        <p style="color: red">{error.message}</p>
+    {/await}
+{/if}

@@ -1,5 +1,9 @@
 <script>
     export let title = "Anime Bangumi";
+    export let active;
+    function toggleActive() {
+        active = !active;
+    }
 </script>
 
 <style>
@@ -25,7 +29,7 @@
         margin: 0 .5em;
     }
     .brand > i:hover {
-        background-color: #e0e0e0;
+        background-color: #efefef;
         cursor: pointer;
     }
     .brand > i > svg {
@@ -34,6 +38,9 @@
     }
     .brand > i > svg > path {
         fill: gray;
+    }
+    .brand > i.active {
+        background-color: #e0e0e0;
     }
     .brand h1 {
         margin: 0;
@@ -45,7 +52,7 @@
 <div class="navbar">
     <div class="left">
         <div class="brand">
-            <i>
+            <i class:active={active} on:click={toggleActive}>
                 <svg class="svg-icon" viewBox="0 0 20 20">
                     <path fill="none" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314
 			    					c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743
