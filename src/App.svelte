@@ -1,6 +1,9 @@
 <script>
   import AnimeList from "./components/AnimeList.svelte";
   import Navbar from "./components/Navbar.svelte";
+  import Calendar from "./components/Calendar.svelte";
+
+  let showAnimeList = true;
 </script>
 
 <style>
@@ -11,7 +14,6 @@
     hyphens: auto;
     line-height: 1.65;
     margin: 0 auto;
-    min-height: calc(100vh - 4em);
     text-align: center;
   }
 </style>
@@ -20,7 +22,8 @@
   <title>Anime Calendar</title>
 </svelte:head>
 
-<Navbar title="アニメ番組"/>
+<Navbar title="アニメ番組" bind:active={showAnimeList}/>
 <main>
-  <AnimeList />
+  <AnimeList show={showAnimeList} />
+  <Calendar />
 </main>

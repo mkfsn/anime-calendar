@@ -1,5 +1,6 @@
 <script>
-    import Anime from "./Anime.svelte";
+    import Anime from "./Anime/Anime.svelte";
+    export let show = true;
     async function fetchAnime() {
         const response = await fetch(`/data/anime.json`);
         if (response.ok) {
@@ -15,8 +16,6 @@
         width: 100%;
         overflow-x: scroll;
         background-color: #e2e2e2;
-        padding-left: 1em;
-        padding-right: 1em;
     }
     .container {
         display: flex;
@@ -25,16 +24,18 @@
     }
 </style>
 
-{#await promise}
-    <p>Loading ...</p>
-{:then animes}
-    <div class="scrollable">
-        <div class="container">
-            {#each animes as anime, i}
-                <Anime {anime} />
-            {/each}
+{#if show}
+    {#await promise}
+        <p>Loading ...</p>
+    {:then animes}
+        <div class="scrollable">
+            <div class="container">
+                {#each animes as anime, i}
+                    <Anime {anime} />
+                {/each}
+            </div>
         </div>
-    </div>
-{:catch error}
-    <p style="color: red">{error.message}</p>
-{/await}
+    {:catch error}
+        <p style="color: red">{error.message}</p>
+    {/await}
+{/if}
