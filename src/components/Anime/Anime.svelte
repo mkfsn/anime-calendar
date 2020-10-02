@@ -1,7 +1,7 @@
 <script>
-    import AnimeActions from "./Anime/AnimeActions.svelte";
-    import AnimeSummary from "./Anime/AnimeSummary.svelte";
-    import AnimeCover from "./Anime/AnimeCover.svelte";
+    import AnimeActions from "./AnimeActions.svelte";
+    import AnimeSummary from "./AnimeSummary.svelte";
+    import AnimeCover from "./AnimeCover.svelte";
 
     export let anime;
 </script>
