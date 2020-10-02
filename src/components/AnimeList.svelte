@@ -15,8 +15,6 @@
         width: 100%;
         overflow-x: scroll;
         background-color: #e2e2e2;
-        padding-left: 1em;
-        padding-right: 1em;
     }
     .container {
         display: flex;
