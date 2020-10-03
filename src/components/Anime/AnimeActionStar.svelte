@@ -1,7 +1,18 @@
 <script>
     import Dropdown from "./Dropdown.svelte";
+    import {timetables} from "../store";
+
     export let anime;
     let selection = [];
+    let enabled = {};
+    function handleChange(channel) {
+        enabled[channel] = !enabled[channel];
+        if (enabled[channel]) {
+            timetables.addProgram(anime.Title, channel, anime.Timetables[channel]);
+        } else {
+            timetables.deleteProgram(anime.Title, channel);
+        }
+    }
 </script>
 
 <div class="star">
@@ -14,7 +25,7 @@
         {#each Array.from(Object.entries(anime.Timetables)) as [channel, timetable]}
             <div>
                 <label>
-                    <input type="checkbox" bind:group={selection} value={channel} /> {channel}
+                    <input type="checkbox" bind:group={selection} value={channel} on:change={handleChange(channel)} /> {channel}
                 </label>
             </div>
         {:else}
