@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {timetables} from "../store";
+    import {timetables} from "../../store";
 
     export let month = -1;
     export let day = -1;

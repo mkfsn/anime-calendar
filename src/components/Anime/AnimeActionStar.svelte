@@ -1,6 +1,6 @@
 <script>
     import Dropdown from "./Dropdown.svelte";
-    import {timetables} from "../store";
+    import {timetables} from "../../store";
 
     export let anime;
     let selection = [];
