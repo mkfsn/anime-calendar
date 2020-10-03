@@ -1,7 +1,7 @@
 <script>
     import calendarize from "calendarize";
-    import CalendarDate from "./Calendar/CalendarDate.svelte";
-    import {dateStore} from "../store";
+    import CalendarDate from "./CalendarDate.svelte";
+    import {dateStore} from "../../store";
 
     let thisMonth = $dateStore,
         prevMonth = new Date(thisMonth),
