@@ -1,19 +1,24 @@
 <script lang="ts">
     import {timetables} from "../../store";
 
-    export let month = -1;
+    export let date = new Date(); // Date
     export let day = -1;
     export let isCurr = false;
 
-    let isToday = (new Date).getDate() === day;
     let programs = [];
+    let today = new Date();
+    let isToday = (month, day) => {
+        return today.getDate() === day &&
+            today.getMonth() === month &&
+            today.getFullYear() === date.getFullYear();
+    }
 
     timetables.subscribe(_programs => {
         programs = Object.keys(_programs).reduce((prev, program) => {
             Object.entries(_programs[program]).forEach(([channel, episodes]) => {
                 episodes.forEach(episode => {
                     const d = new Date(episode.StartAt);
-                    if (d.getMonth() === month && d.getDate() === day) {
+                    if (d.getMonth() === date.getMonth() && d.getDate() === day) {
                         prev.push({channel, program});
                     }
                 })
@@ -23,9 +28,9 @@
     });
 </script>
 
-<div class="date" class:today={isToday} class:other={!isCurr}>
+<div class="date" class:today={isToday(date.getMonth(), day)} class:other={!isCurr}>
     {#if day === 1}
-        <p class="title">{ month + 1 } / { day }</p>
+        <p class="title">{ date.getMonth() + 1 } / { day }</p>
     {:else}
         <p class="title">{ day }</p>
     {/if}
