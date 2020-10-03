@@ -1,27 +1,30 @@
 <script>
     import calendarize from "calendarize";
     import CalendarDate from "./Calendar/CalendarDate.svelte";
+    import {dateStore} from "../store";
 
-    export let init = new Date();
-    export let year = init.getFullYear();
-    export let month = init.getMonth();
-    export let today = init;
+    let thisMonth = $dateStore,
+        prevMonth = new Date(thisMonth),
+        nextMonth = new Date(thisMonth);
+    prevMonth.setMonth(prevMonth.getMonth()-1);
+    nextMonth.setMonth(nextMonth.getMonth()+1);
 
-    let prev = calendarize(new Date(year, month-1)),
-        curr = calendarize(new Date(year, month)),
-        next = calendarize(new Date(year, month+1));
+    let prev = calendarize(prevMonth),
+        curr = calendarize(thisMonth),
+        next = calendarize(nextMonth);
 
-    function toPrev() {
-
-    }
-
-    function toNext() {
-
-    }
-
-    function isToday(day) {
-        return today.getDate() === day;
-    }
+    dateStore.subscribe(d => {
+        thisMonth = d;
+        prevMonth = new Date(d);
+        nextMonth = new Date(d);
+        prevMonth.setMonth(prevMonth.getMonth()-1);
+        nextMonth.setMonth(nextMonth.getMonth()+1);
+        console.log({thisMonth, prevMonth, nextMonth});
+        prev = calendarize(prevMonth);
+        curr = calendarize(thisMonth);
+        next = calendarize(nextMonth);
+        console.log({prev, curr, next});
+    })
 </script>
 
 <style>
@@ -46,16 +49,16 @@
 
 <div class="calendar">
     <div class="container">
-        {#each { length:6 } as week, week_idx (week_idx)}
+        {#each { length:6 } as _, week_idx (week_idx)}
             {#if curr[week_idx]}
                 <div class="week">
-                    {#each { length:7 } as day, day_idx (day_idx)}
+                    {#each { length:7 } as _, day_idx (day_idx)}
                         {#if curr[week_idx][day_idx] !== 0}
-                            <CalendarDate day={curr[week_idx][day_idx]} isCurr={true} month={month} />
+                            <CalendarDate day={curr[week_idx][day_idx]} isCurr={true} date={thisMonth} />
                         {:else if (week_idx < 1)}
-                            <CalendarDate day={prev[prev.length - 1][day_idx]} isCurr={false} />
+                            <CalendarDate day={prev[prev.length - 1][day_idx]} isCurr={false} date={prevMonth} />
                         {:else}
-                            <CalendarDate day={next[0][day_idx]} isCurr={false} />
+                            <CalendarDate day={next[0][day_idx]} isCurr={false} date={nextMonth} />
                         {/if}
                     {/each}
                 </div>

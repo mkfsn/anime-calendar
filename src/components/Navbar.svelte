@@ -1,4 +1,5 @@
 <script>
+    import CalendarController from "./Calendar/CalendarController.svelte";
     export let title = "Anime Bangumi";
     export let active;
     function toggleActive() {
@@ -46,6 +47,14 @@
         margin: 0;
         font-size: 1.5em;
     }
+    .left {
+        flex: 1 1;
+    }
+    .right {
+        flex: 1 1;
+        text-align: right;
+        align-self: center;
+    }
 </style>
 
 
@@ -63,5 +72,7 @@
             <h1>{ title }</h1>
         </div>
     </div>
-    <div class="right"></div>
+    <div class="right">
+        <CalendarController />
+    </div>
 </div>
