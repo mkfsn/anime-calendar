@@ -1,5 +1,6 @@
 <script>
     import calendarize from "calendarize";
+    import CalendarDate from "./Calendar/CalendarDate.svelte";
 
     export let init = new Date();
     export let year = init.getFullYear();
@@ -38,26 +39,8 @@
     }
     .week {
         display: flex;
-        flex-grow: 1;
+        flex: 1 1;
         font-variant-numeric: tabular-nums;
-    }
-
-    .date {
-        flex-grow: 1;
-        width: calc(100% / 7);
-        padding: .5em;
-        border-right: 1px solid #cccccc;
-        border-bottom: 1px solid #cccccc;
-    }
-    .date.today {
-        font-weight: 900;
-        background-color: #efefef;
-    }
-    .date.other {
-        color: rgba(128, 128, 128, .5);
-    }
-    .date.other > * {
-        opacity: .2;
     }
 </style>
 
@@ -68,17 +51,11 @@
                 <div class="week">
                     {#each { length:7 } as day, day_idx (day_idx)}
                         {#if curr[week_idx][day_idx] !== 0}
-                            <div class="date" class:today={isToday(curr[week_idx][day_idx])}>
-                                {#if curr[week_idx][day_idx] === 1}
-                                    { month + 1 } / { curr[week_idx][day_idx] }
-                                {:else}
-                                    { curr[week_idx][day_idx] }
-                                {/if}
-                            </div>
+                            <CalendarDate day={curr[week_idx][day_idx]} isCurr={true} month={month} />
                         {:else if (week_idx < 1)}
-                            <div class="date other">{ prev[prev.length - 1][day_idx] }</div>
+                            <CalendarDate day={prev[prev.length - 1][day_idx]} isCurr={false} />
                         {:else}
-                            <div class="date other">{ next[0][day_idx] }</div>
+                            <CalendarDate day={next[0][day_idx]} isCurr={false} />
                         {/if}
                     {/each}
                 </div>
