@@ -26,3 +26,7 @@ function createTimetables() {
 }
 
 export const timetables = createTimetables();
+export const animeStore = writable({
+    loaded: false,
+    data: [],
+});

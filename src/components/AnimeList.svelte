@@ -1,14 +1,15 @@
 <script>
     import Anime from "./Anime/Anime.svelte";
+    import {fetchAnime} from "../utils";
+    import {animeStore} from "../store";
     export let show = true;
-    async function fetchAnime() {
-        const response = await fetch(`/data/anime.json`);
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error("failed to fetch anime");
-    }
-    let promise = fetchAnime();
+    $: $animeStore.loaded ? $animeStore.data : fetchAnime().then(data => {
+        animeStore.update(o => {
+            o.data = data;
+            o.loaded = true;
+            return o;
+        })
+    })
 </script>
 
 <style>
@@ -25,17 +26,15 @@
 </style>
 
 {#if show}
-    {#await promise}
-        <p>Loading ...</p>
-    {:then animes}
+    {#if $animeStore.loaded}
         <div class="scrollable">
             <div class="container">
-                {#each animes as anime, i}
+                {#each $animeStore.data as anime, i}
                     <Anime {anime} />
                 {/each}
             </div>
         </div>
-    {:catch error}
-        <p style="color: red">{error.message}</p>
-    {/await}
+    {:else}
+        <p>Loading ...</p>
+    {/if}
 {/if}
