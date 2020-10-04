@@ -45,7 +45,7 @@
     }
     .brand h1 {
         margin: 0;
-        font-size: 1.5em;
+        font-size: 1.3em;
     }
     .left {
         flex: 1 1;

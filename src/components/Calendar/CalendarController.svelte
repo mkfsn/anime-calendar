@@ -36,7 +36,7 @@
     }
     .date {
         font-variant-numeric: tabular-nums;
-        margin: 0 1em;
+        margin: 0;
     }
     .arrow {
         margin: 0;
