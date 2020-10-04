@@ -1,16 +1,27 @@
 <script>
     import Dropdown from "./Dropdown.svelte";
-    import {timetables} from "../../store";
+    import {configStore, timetables} from "../../store";
 
     export let anime;
-    let selection = [];
-    let enabled = {};
-    function handleChange(channel) {
-        enabled[channel] = !enabled[channel];
-        if (enabled[channel]) {
-            timetables.addProgram(anime.Title, channel, anime.Timetables[channel]);
+    let selection = $configStore.programs[anime.Id]
+        ? $configStore.programs[anime.Id].map(i => anime.Channels[i])
+        : [];
+    let enabled = $configStore.programs[anime.Id]
+        ? $configStore.programs[anime.Id].reduce((acc, cur) => ({...acc, [cur]: true}), {})
+        : {};
+
+    $configStore.programs[anime.Id] && $configStore.programs[anime.Id].forEach(i => {
+        timetables.addProgram(anime.Title, anime.Channels[i], anime.Timetables[i]);
+    })
+
+    function handleChange(channelIndex) {
+        enabled[channelIndex] = !enabled[channelIndex];
+        if (enabled[channelIndex]) {
+            timetables.addProgram(anime.Title, anime.Channels[channelIndex], anime.Timetables[channelIndex]);
+            configStore.addProgram(anime.Id, channelIndex);
         } else {
-            timetables.deleteProgram(anime.Title, channel);
+            timetables.deleteProgram(anime.Title, anime.Channels[channelIndex]);
+            configStore.deleteProgram(anime.Id, channelIndex);
         }
     }
 </script>
@@ -22,10 +33,10 @@
                 <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
             </svg>
         </i>
-        {#each Array.from(Object.entries(anime.Timetables)) as [channel, timetable]}
+        {#each anime.Channels as channel, index (index)}
             <div>
                 <label>
-                    <input type="checkbox" bind:group={selection} value={channel} on:change={handleChange(channel)} /> {channel}
+                    <input type="checkbox" bind:group={selection} value={channel} on:change={handleChange(index)} /> {channel}
                 </label>
             </div>
         {:else}
