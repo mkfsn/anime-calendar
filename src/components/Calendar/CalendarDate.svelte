@@ -1,4 +1,5 @@
 <script lang="ts">
+    import {afterUpdate} from "svelte";
     import {timetables} from "../../store";
 
     export let date = new Date(); // Date
@@ -13,9 +14,11 @@
             today.getFullYear() === date.getFullYear();
     }
 
-    timetables.subscribe(_programs => {
-        programs = Object.keys(_programs).reduce((prev, program) => {
-            Object.entries(_programs[program]).forEach(([channel, episodes]) => {
+    let allPrograms = {};
+
+    function updatePrograms() {
+        programs = Object.keys(allPrograms).reduce((prev, program) => {
+            Object.entries(allPrograms[program]).forEach(([channel, episodes]) => {
                 episodes.forEach(episode => {
                     const d = new Date(episode.StartAt);
                     if (d.getMonth() === date.getMonth() && d.getDate() === day) {
@@ -25,7 +28,12 @@
             })
             return prev;
         }, []);
-    });
+    }
+
+    timetables.subscribe(_programs => { allPrograms = _programs; updatePrograms() });
+    afterUpdate(() => {
+        updatePrograms();
+    })
 </script>
 
 <div class="date" class:today={isToday(date.getMonth(), day)} class:other={!isCurr}>
