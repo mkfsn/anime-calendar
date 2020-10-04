@@ -1,9 +1,10 @@
 <script>
+    import IconLink from "./IconLink.svelte";
     export let anime;
 </script>
 
-<p class="title">
-    {anime.Title}
+<p class="header">
+    <IconLink title={anime.Title} href={anime.Website} />
 </p>
 <div class="row">
     <div class="staff">
@@ -26,15 +27,10 @@
 </div>
 
 <style>
-    .title {
+    .header {
         padding: .5em .25em;
         margin: 0;
-        font-size: .7em;
         background-color: #8e8e8e;
-        color: #eaeaea;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
     .row {
         border-top: 1px solid #eaeaea;
