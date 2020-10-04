@@ -19,11 +19,9 @@
         nextMonth = new Date(d);
         prevMonth.setMonth(prevMonth.getMonth()-1);
         nextMonth.setMonth(nextMonth.getMonth()+1);
-        console.log({thisMonth, prevMonth, nextMonth});
         prev = calendarize(prevMonth);
         curr = calendarize(thisMonth);
         next = calendarize(nextMonth);
-        console.log({prev, curr, next});
     })
 </script>
 
