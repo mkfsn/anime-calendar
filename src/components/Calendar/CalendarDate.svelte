@@ -21,7 +21,7 @@
             Object.entries(allPrograms[program]).forEach(([channel, episodes]) => {
                 episodes.forEach(episode => {
                     const d = new Date(episode.StartAt);
-                    if (d.getMonth() === date.getMonth() && d.getDate() === day) {
+                    if (d.getFullYear() === date.getFullYear() && d.getMonth() === date.getMonth() && d.getDate() === day) {
                         prev.push({channel, program});
                     }
                 })
