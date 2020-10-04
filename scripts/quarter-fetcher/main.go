@@ -60,7 +60,8 @@ type Anime struct {
 	Cast       map[string]string
 	Programs   []*Program
 	Links      []*Link
-	Timetables map[string]Timetable
+	Channels   []string
+	Timetables []Timetable
 }
 
 func main() {
@@ -190,13 +191,13 @@ func fetchTimetable(wg *sync.WaitGroup, anime *Anime) {
 	}
 
 	table := doc.Find("table#ProgList")
-	anime.Timetables = make(map[string]Timetable)
+	timetableByChannel := make(map[string]Timetable)
 	table.Find("tbody tr").Each(func(i int, tr *goquery.Selection) {
 		if i == 0 {
 			return
 		}
 		channel := tr.Find("td.ch").Text()
-		timetables := anime.Timetables[channel]
+		timetable := timetableByChannel[channel]
 
 		var episode Episode
 		episode.Channel = channel
@@ -229,13 +230,15 @@ func fetchTimetable(wg *sync.WaitGroup, anime *Anime) {
 			episode.Number = v
 		}
 
-		timetables = append(timetables, episode)
-		anime.Timetables[channel] = timetables
+		timetable = append(timetable, episode)
+		timetableByChannel[channel] = timetable
 	})
 
-	channels := make([]string, 0)
-	for channel := range anime.Timetables {
-		channels = append(channels, channel)
+	anime.Channels = make([]string, 0)
+	anime.Timetables = make([]Timetable, 0)
+	for channel, timetable := range timetableByChannel {
+		anime.Channels = append(anime.Channels, channel)
+		anime.Timetables = append(anime.Timetables, timetable)
 	}
 }
 
