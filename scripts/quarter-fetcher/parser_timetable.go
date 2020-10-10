@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"time"
 
@@ -63,10 +64,14 @@ func (p *timetableParser) Parse() error {
 	})
 
 	p.anime.Channels = make([]string, 0)
-	p.anime.Timetables = make([]Timetable, 0)
-	for channel, timetable := range timetableByChannel {
+	for channel := range timetableByChannel {
 		p.anime.Channels = append(p.anime.Channels, channel)
-		p.anime.Timetables = append(p.anime.Timetables, timetable)
+	}
+
+	sort.Strings(p.anime.Channels)
+	p.anime.Timetables = make([]Timetable, 0)
+	for _, channel := range p.anime.Channels {
+		p.anime.Timetables = append(p.anime.Timetables, timetableByChannel[channel])
 	}
 
 	return nil
