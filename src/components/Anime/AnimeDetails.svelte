@@ -1,11 +1,10 @@
 <script>
     import {Tabs, Tab, TabList, TabPanel} from 'svelte-tabs';
     import Table from "../Table.svelte";
+    import DropdownTabs from "../DropdownTabs.svelte";
 
     export let anime;
     export let episode;
-
-    let selected;
 
     function toHighlight(_episode) {
         return _episode === episode;
@@ -62,26 +61,12 @@
             <TabPanel>
                 <section>
                     <div class="content">
-                        <select bind:value={selected}>
-                            {#each anime.Channels as channel, index}
-                                <option value={index}>
-                                    {channel}
-                                </option>
-                            {/each}
-                        </select>
-                        {#if selected !== undefined}
-                            <table>
-                                <tbody>
-                                    {#each anime.Timetables[selected] as episode}
-                                        <tr class:active={toHighlight(episode)}>
-                                            <th>{episode.Number}</th>
-                                            <td>{episode.StartAt}</td>
-                                            <td>{episode.Subtitle}</td>
-                                        </tr>
-                                    {/each}
-                                </tbody>
-                            </table>
-                        {/if}
+                        <DropdownTabs
+                            highlightValue={toHighlight}
+                            keys={anime.Channels}
+                            values={anime.Timetables}
+                            valueToRows={(v) => [v.Number, v.StartAt, v.Subtitle]}
+                        />
                     </div>
                 </section>
             </TabPanel>
@@ -128,9 +113,6 @@
     }
     .container :global(.svelte-tabs .svelte-tabs__tab-list) {
         border-bottom: none;
-    }
-    tr.active {
-        background-color: yellow;
     }
 </style>
 
