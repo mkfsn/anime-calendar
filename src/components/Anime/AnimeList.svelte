@@ -1,7 +1,7 @@
 <script>
     import Anime from "./Anime.svelte";
     import {fetchAnime} from "../../utils";
-    import {animeStore} from "../../store";
+    import {animeStore} from "../../stores";
     $: $animeStore.loaded ? $animeStore.data : fetchAnime().then(data => {
         animeStore.update(o => {
             o.data = data;
@@ -14,7 +14,7 @@
 {#if $animeStore.loaded}
     <div class="scrollable">
         <div class="container">
-            {#each $animeStore.data as anime, i}
+            {#each $animeStore.data as anime}
                 <Anime {anime} />
             {/each}
         </div>

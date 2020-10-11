@@ -86,32 +86,9 @@
         cursor: pointer;
     }
 
-    /* Modal Header */
-    .modal-header {
-        padding: 2px 16px;
-        background-color: #5cb85c;
-        color: white;
-    }
-
-    /* Modal Body */
-    .modal-body {
-        padding: 2px 16px;
-    }
-
-    /* Modal Footer */
-    .modal-footer {
-        padding: 2px 16px;
-        background-color: #5cb85c;
-        color: white;
-    }
-
     /* Add Animation */
     @keyframes animatetop {
         from {top: -300px; opacity: 0}
         to {top: 0; opacity: 1}
     }
 </style>
-
-
-
-

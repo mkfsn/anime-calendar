@@ -1,6 +1,6 @@
-<script lang="ts">
+<script>
     import {afterUpdate} from "svelte";
-    import {timetables} from "../../store";
+    import {timetablesStore} from "../../stores";
     import CalendarProgram from "./CalendarProgram.svelte";
 
     export let date = new Date(); // Date
@@ -31,7 +31,7 @@
         }, []);
     }
 
-    timetables.subscribe(_programs => {
+    timetablesStore.subscribe(_programs => {
         allPrograms = _programs;
         updatePrograms()
     });
