@@ -1,5 +1,7 @@
 <script>
-    import { Tabs, Tab, TabList, TabPanel } from 'svelte-tabs';
+    import {Tabs, Tab, TabList, TabPanel} from 'svelte-tabs';
+    import Table from "../Table.svelte";
+
     export let anime;
     export let episode;
 
@@ -8,6 +10,7 @@
     function toHighlight(_episode) {
         return _episode === episode;
     }
+
     function backgroundImage(anime) {
         if (anime.OpenGraph && anime.OpenGraph.Images && anime.OpenGraph.Images.length > 0) {
             return `url(${anime.OpenGraph.Images[0].URL})`
@@ -42,14 +45,7 @@
         {#if anime.Cast}
             <TabPanel>
                 <section>
-                    <table>
-                        {#each Array.from(Object.entries(anime.Cast)) as [k, v] }
-                            <tr>
-                                <th>{k}</th>
-                                <td>{v}</td>
-                            </tr>
-                        {/each}
-                    </table>
+                    <Table entries={Object.entries(anime.Cast)} />
                 </section>
             </TabPanel>
         {/if}
@@ -57,14 +53,7 @@
         {#if anime.Staff}
             <TabPanel>
                 <section>
-                    <table>
-                        {#each Array.from(Object.entries(anime.Staff)) as [k, v] }
-                            <tr>
-                                <th>{k}</th>
-                                <td>{v}</td>
-                            </tr>
-                        {/each}
-                    </table>
+                    <Table entries={Object.entries(anime.Staff)} />
                 </section>
             </TabPanel>
         {/if}
