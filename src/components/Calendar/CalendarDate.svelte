@@ -18,16 +18,16 @@
     let allPrograms = {};
 
     function updatePrograms() {
-        programs = Object.keys(allPrograms).reduce((prev, program) => {
-            Object.entries(allPrograms[program]).forEach(([channel, episodes]) => {
-                episodes.forEach(episode => {
+        programs = Object.values(allPrograms).reduce((acc, program) => {
+            program.selected.forEach((channelIndex) => {
+                program.Timetables[channelIndex].forEach(episode => {
                     const d = new Date(episode.StartAt);
                     if (d.getFullYear() === date.getFullYear() && d.getMonth() === date.getMonth() && d.getDate() === day) {
-                        prev.push({channel, program});
+                        acc.push({program, episode});
                     }
                 })
             })
-            return prev;
+            return acc;
         }, []);
     }
 
@@ -48,7 +48,7 @@
     {/if}
     <div class="programs">
         {#each programs as program}
-            <CalendarProgram {program} />
+            <CalendarProgram program={program.program} episode={program.episode} />
         {/each}
     </div>
 </div>

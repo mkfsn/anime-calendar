@@ -1,6 +1,8 @@
 <script>
     import Modal from "../Anime/Modal.svelte";
+    import AnimeDetails from "../Anime/AnimeDetails.svelte";
     export let program;
+    export let episode;
 
     function getRandomColor(ref, min=128, max=248) {
         const modulo = max - min;
@@ -20,10 +22,12 @@
 </script>
 
 <Modal>
-    <p class="program" style="--background-color: {getRandomColor(program.program)}" slot="trigger">
-        <span>[{program.channel}]</span>
-        {program.program}
+    <p class="program" style="--background-color: {getRandomColor(program.Title)}" slot="trigger">
+        {program.Title}
     </p>
+    <div class="modal-content" slot="content">
+        <AnimeDetails anime={program} episode={episode} />
+    </div>
 </Modal>
 
 
@@ -37,5 +41,6 @@
         padding: .2em .4em;
         background-color: var(--background-color);
         border-radius: 5px;
+        text-align: left;
     }
 </style>

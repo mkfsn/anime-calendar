@@ -2,23 +2,27 @@ import { writable } from 'svelte/store';
 
 function createTimetables() {
     const { subscribe, set, update } = writable({
-        // [program]: {
-        //  [channel]: []
-        //}
+        // [id]: {
+        //   ...anime,
+        //   [selected]: []
+        // }
     });
     return {
         subscribe,
-        addProgram: (program, channel, timetables) => update(o => {
-            if (!o[program]) {
-                o[program] = {};
+        addProgram: (anime, channelIndex) => update(o => {
+            if (!o[anime.Id]) {
+                o[anime.Id] = {
+                    ...anime,
+                    ["selected"]: [],
+                }
             }
-            o[program][channel] = timetables;
+            o[anime.Id]["selected"].push(channelIndex);
             return o;
         }),
-        deleteProgram: (program, channel) => update(o => {
-            delete o[program][channel];
-            if (o[program].length === 0) {
-                delete o[program];
+        deleteProgram: (anime, channelIndex) => update(o => {
+            o[anime.Id]["selected"] = o[anime.Id]["selected"].filter(v => v !== channelIndex)
+            if (o[anime.Id]["selected"].length === 0) {
+                delete o[anime.Id];
             }
             return o;
         })
