@@ -11,16 +11,16 @@
         : {};
 
     $configStore.programs[anime.Id] && $configStore.programs[anime.Id].forEach(i => {
-        timetables.addProgram(anime.Title, anime.Channels[i], anime.Timetables[i]);
+        timetables.addProgram(anime, i);
     })
 
     function handleChange(channelIndex) {
         enabled[channelIndex] = !enabled[channelIndex];
         if (enabled[channelIndex]) {
-            timetables.addProgram(anime.Title, anime.Channels[channelIndex], anime.Timetables[channelIndex]);
+            timetables.addProgram(anime, channelIndex);
             configStore.addProgram(anime.Id, channelIndex);
         } else {
-            timetables.deleteProgram(anime.Title, anime.Channels[channelIndex]);
+            timetables.deleteProgram(anime, channelIndex);
             configStore.deleteProgram(anime.Id, channelIndex);
         }
     }

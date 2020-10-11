@@ -1,6 +1,7 @@
 <script lang="ts">
     import {afterUpdate} from "svelte";
     import {timetables} from "../../store";
+    import CalendarProgram from "./CalendarProgram.svelte";
 
     export let date = new Date(); // Date
     export let day = -1;
@@ -17,39 +18,26 @@
     let allPrograms = {};
 
     function updatePrograms() {
-        programs = Object.keys(allPrograms).reduce((prev, program) => {
-            Object.entries(allPrograms[program]).forEach(([channel, episodes]) => {
-                episodes.forEach(episode => {
+        programs = Object.values(allPrograms).reduce((acc, program) => {
+            program.selected.forEach((channelIndex) => {
+                program.Timetables[channelIndex].forEach(episode => {
                     const d = new Date(episode.StartAt);
                     if (d.getFullYear() === date.getFullYear() && d.getMonth() === date.getMonth() && d.getDate() === day) {
-                        prev.push({channel, program});
+                        acc.push({program, episode});
                     }
                 })
             })
-            return prev;
+            return acc;
         }, []);
     }
 
-    timetables.subscribe(_programs => { allPrograms = _programs; updatePrograms() });
+    timetables.subscribe(_programs => {
+        allPrograms = _programs;
+        updatePrograms()
+    });
     afterUpdate(() => {
         updatePrograms();
     })
-
-    function getRandomColor(ref, min=128, max=248) {
-        const modulo = max - min;
-
-        const colors = [0, 0, 0]; // R, G, B
-        for (let i = 0; i < ref.length; i++) {
-            const old = colors[i % colors.length];
-            colors[i % colors.length] += (old + ref.charCodeAt(i)) % modulo;
-        }
-
-        let color = '#';
-        for (let i = 0; i < colors.length; i++) {
-            color += ('00' + (colors[i] % modulo + min).toString(16)).substr(-2);
-        }
-        return color;
-    }
 </script>
 
 <div class="date" class:today={isToday(date.getMonth(), day)} class:other={!isCurr}>
@@ -60,10 +48,7 @@
     {/if}
     <div class="programs">
         {#each programs as program}
-            <p class="program" style="--background-color: {getRandomColor(program.program)}">
-                <span>[{program.channel}]</span>
-                {program.program}
-            </p>
+            <CalendarProgram program={program.program} episode={program.episode} />
         {/each}
     </div>
 </div>
@@ -82,11 +67,11 @@
         font-weight: 900;
         background-color: #efefef;
     }
-    .date.other {
+    .date.other .title {
         color: rgba(126, 126, 126, 0.5);
     }
-    .date.other > * {
-        opacity: .2;
+    .date.other .programs :global(.program) {
+        opacity: .5;
     }
     .date.other > .title {
         opacity: 1;
@@ -94,15 +79,5 @@
     .title {
         margin-top: 0;
         margin-bottom: .5em;
-    }
-    .program {
-        font-size: .8em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        margin: 0 0 .4em;
-        padding: .2em .4em;
-        background-color: var(--background-color);
-        border-radius: 5px;
     }
 </style>
