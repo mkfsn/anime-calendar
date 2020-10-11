@@ -1,6 +1,6 @@
 import App from './App.svelte';
 import {deserializeConfig, serializeConfig} from "./utils";
-import {configStore} from "./store";
+import {configStore} from "./stores";
 
 const app = new App({
   target: document.body,

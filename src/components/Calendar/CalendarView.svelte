@@ -1,9 +1,9 @@
 <script>
     import calendarize from "calendarize";
     import CalendarDate from "./CalendarDate.svelte";
-    import {dateStore} from "../../store";
+    import {calendarStore} from "../../stores";
 
-    let thisMonth = $dateStore,
+    let thisMonth = $calendarStore,
         prevMonth = new Date(thisMonth),
         nextMonth = new Date(thisMonth);
     prevMonth.setMonth(prevMonth.getMonth()-1);
@@ -13,7 +13,7 @@
         curr = calendarize(thisMonth),
         next = calendarize(nextMonth);
 
-    dateStore.subscribe(d => {
+    calendarStore.subscribe(d => {
         thisMonth = d;
         prevMonth = new Date(d);
         nextMonth = new Date(d);

@@ -1,6 +1,6 @@
 <script>
     import Dropdown from "./Dropdown.svelte";
-    import {configStore, timetables} from "../../store";
+    import {configStore, timetablesStore} from "../../stores"
 
     export let anime;
     let selection = $configStore.programs[anime.Id]
@@ -11,16 +11,16 @@
         : {};
 
     $configStore.programs[anime.Id] && $configStore.programs[anime.Id].forEach(i => {
-        timetables.addProgram(anime, i);
+        timetablesStore.addProgram(anime, i);
     })
 
     function handleChange(channelIndex) {
         enabled[channelIndex] = !enabled[channelIndex];
         if (enabled[channelIndex]) {
-            timetables.addProgram(anime, channelIndex);
+            timetablesStore.addProgram(anime, channelIndex);
             configStore.addProgram(anime.Id, channelIndex);
         } else {
-            timetables.deleteProgram(anime, channelIndex);
+            timetablesStore.deleteProgram(anime, channelIndex);
             configStore.deleteProgram(anime.Id, channelIndex);
         }
     }
