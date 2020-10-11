@@ -67,11 +67,11 @@
         font-weight: 900;
         background-color: #efefef;
     }
-    .date.other {
+    .date.other .title {
         color: rgba(126, 126, 126, 0.5);
     }
-    .date.other > * {
-        opacity: .2;
+    .date.other .programs :global(.program) {
+        opacity: .5;
     }
     .date.other > .title {
         opacity: 1;
