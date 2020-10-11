@@ -27,7 +27,7 @@
         display: flex;
         align-items: inherit;
         justify-content: center;
-        margin: 0 .5em;
+        margin: 0 .5em 0 0;
     }
     .brand > i:hover {
         background-color: #efefef;
@@ -52,8 +52,9 @@
     }
     .right {
         flex: 1 1;
-        text-align: right;
         align-self: center;
+        display: flex;
+        justify-content: flex-end;
     }
 </style>
 
