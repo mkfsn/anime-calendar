@@ -1,9 +1,9 @@
 <script>
-  import AnimeList from "./components/AnimeList.svelte";
-  import Navbar from "./components/Navbar.svelte";
-  import CalendarView from "./components/Calendar/CalendarView.svelte";
-
-  let showAnimeList = true;
+    import Navbar from "./components/Navbar.svelte";
+    import CalendarView from "./components/Calendar/CalendarView.svelte";
+    import Slider from "./components/Slider.svelte";
+    import AnimeList from "./components/Anime/AnimeList.svelte";
+    let showAnimeList = true;
 </script>
 
 <style>
@@ -23,6 +23,8 @@
 
 <Navbar title="アニメ番組" bind:active={showAnimeList}/>
 <main>
-  <AnimeList show={showAnimeList} />
-  <CalendarView />
+    <Slider collapse={!showAnimeList}>
+        <AnimeList />
+    </Slider>
+    <CalendarView />
 </main>
